@@ -20,10 +20,16 @@ public class FlapControl : MonoBehaviour
     // Store the Rigidbody2D component in memory for easier access.
     private Rigidbody2D _rigidbody;
 
+    // A reference to the score manager on this scene.
+    private ScoreManager _scoreManager;
+
     // Loading all the references when the script is Awake.
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
+
+        // look for the score manager on the same scene.
+        _scoreManager = FindObjectOfType<ScoreManager>();
     }
 
     // Physics should be allocated into FixedUpdate.
@@ -31,6 +37,22 @@ public class FlapControl : MonoBehaviour
     {
         float angle = Mathf.Clamp(_rigidbody.velocity.y * rotationMultiplier, minAngle, maxAngle);
         _rigidbody.MoveRotation(angle);
+    }
+
+    // When the bird collides with anything, it's game over.
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        Debug.Log("You died");
+    }
+
+    // This method will fire when the bird/player touches
+    // a collider with the trigger option enabled.
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.tag == "Score")
+        {
+            _scoreManager.AddScore();
+        }
     }
 
     // Handle all input control on Update for snappier responses.
