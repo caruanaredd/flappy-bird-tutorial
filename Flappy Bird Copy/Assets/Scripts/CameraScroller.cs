@@ -10,6 +10,7 @@ public class CameraScroller : MonoBehaviour
     // Move the camera consistently to the right.
     private void Update()
     {
+        if (GameManager.state == GameState.GameOverScreen) return;
         transform.Translate(Vector2.right * speed * Time.deltaTime);
     }
 }

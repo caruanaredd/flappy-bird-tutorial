@@ -26,7 +26,9 @@ public class FlapControl : MonoBehaviour
     // Loading all the references when the script is Awake.
     private void Awake()
     {
+        // Set the rigidbody to static so the bird will not move right away.
         _rigidbody = GetComponent<Rigidbody2D>();
+        _rigidbody.bodyType = RigidbodyType2D.Static;
 
         // look for the score manager on the same scene.
         _scoreManager = FindObjectOfType<ScoreManager>();
@@ -35,6 +37,9 @@ public class FlapControl : MonoBehaviour
     // Physics should be allocated into FixedUpdate.
     private void FixedUpdate()
     {
+        // if the rigidbody can't move, we'll stop trying to rotate it.
+        if (_rigidbody.bodyType != RigidbodyType2D.Dynamic) return;
+
         float angle = Mathf.Clamp(_rigidbody.velocity.y * rotationMultiplier, minAngle, maxAngle);
         _rigidbody.MoveRotation(angle);
     }
@@ -42,7 +47,7 @@ public class FlapControl : MonoBehaviour
     // When the bird collides with anything, it's game over.
     private void OnCollisionEnter2D(Collision2D other)
     {
-        Debug.Log("You died");
+        GameManager.current.StopGame();
     }
 
     // This method will fire when the bird/player touches
@@ -60,8 +65,22 @@ public class FlapControl : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump"))
         {
-            Flap();
+            if (GameManager.state.Equals(GameState.Game))
+            {
+                Flap();
+            }
+            else if (GameManager.state.Equals(GameState.TitleScreen))
+            {
+                GameManager.current.StartGame();
+            }
         }
+    }
+
+    // Activate the player's physics.
+    public void Activate()
+    {
+        _rigidbody.bodyType = RigidbodyType2D.Dynamic;
+        Flap();
     }
 
     // Causes the player to "jump".

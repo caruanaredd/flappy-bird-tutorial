@@ -16,15 +16,23 @@ public class PipeManager : MonoBehaviour
     // Pipes will be spawned with a delay in between.
     public float spawnInterval = 1f;
 
-    // TESTING: REMOVE THIS FUNCTION LATER
-    private void Start()
+    // This method will start the pipe spawning routine.
+    public void Spawn()
     {
         StartCoroutine(SpawnPipes());
     }
 
+    // Will disable the colliders on all the pipes in the scene.
+    public void Disable()
+    {
+        Pipe[] pipes = FindObjectsOfType<Pipe>();
+        foreach (Pipe p in pipes) p.Disable();
+    }
+
     private IEnumerator SpawnPipes()
     {
-        while (true)
+        // Only spawn pipes when the game is playing.
+        while (GameManager.state == GameState.Game)
         {
             // Create a variable containing the spawn point position.
             Vector3 pos = transform.position;
